@@ -8,9 +8,18 @@ class FileStorage:
     __file_path = 'file.json'
     __objects = {}
 
-    def all(self):
+    def all(self, cls=None):
         """Returns a dictionary of models currently in storage"""
-        return FileStorage.__objects
+        if cls is not None:
+            if type(cls) == str:
+                cls = eval(cls)
+            dict = {}
+            for k, v in self.__objects.items():
+                if type(v) == cls:
+                    dict[k] = v
+            return dict
+
+        return self.__objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
@@ -36,15 +45,35 @@ class FileStorage:
         from models.review import Review
 
         classes = {
-                    'BaseModel': BaseModel, 'User': User, 'Place': Place,
-                    'State': State, 'City': City, 'Amenity': Amenity,
-                    'Review': Review
-                  }
+            'BaseModel': BaseModel, 'User': User, 'Place': Place,
+            'State': State, 'City': City, 'Amenity': Amenity,
+            'Review': Review
+        }
         try:
             temp = {}
             with open(FileStorage.__file_path, 'r') as f:
                 temp = json.load(f)
                 for key, val in temp.items():
-                        self.all()[key] = classes[val['__class__']](**val)
+                    self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
             pass
+
+    def delete(self, obj=None):
+        """Deletes an object from __objects"""
+
+        if obj is None:
+            return
+
+        # print(f"type of objet is {type(obj)}")
+        # print(f"object to delte is {obj}")
+        for key, value in list(self.__objects.items()):
+            # print("--------------------\n")
+            # print(f"key = {key}")
+            # print(f"value = {value}")
+            # print("--------------------\n")
+            if value is obj:
+                try:
+                    del self.__objects[key]
+                except (KeyError, AttributeError):
+                    pass
+                break
