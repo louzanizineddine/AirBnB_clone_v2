@@ -41,6 +41,7 @@ class BaseModel:
 
     def save(self):
         """Updates updated_at with current time when instance is changed"""
+        """This function uses FileStorage to add and save"""
         self.updated_at = datetime.now()
         models.storage.new(self)
         models.storage.save()
@@ -53,7 +54,8 @@ class BaseModel:
                           (str(type(self)).split('.')[-1]).split('\'')[0]})
         dictionary['created_at'] = self.created_at.isoformat()
         dictionary['updated_at'] = self.updated_at.isoformat()
-        dictionary.pop("_sa_instance_state", None)
+        if '_sa_instance_state' in dictionary:
+            dictionary.pop("_sa_instance_state")
         return dictionary
 
     def delete(self):
