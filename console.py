@@ -73,7 +73,7 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] is '{' and pline[-1] is'}'\
+                    if pline[0] is '{' and pline[- 1] is '}'\
                             and type(eval(pline)) is dict:
                         _args = pline
                     else:
@@ -124,7 +124,7 @@ class HBNBCommand(cmd.Cmd):
         if c_name not in HBNBCommand.classes:  # class name invalid
             print("** class doesn't exist **")
             return
-        
+
         args_to_dict = {}
         lst = line[1:]
         for param in lst:
@@ -139,14 +139,11 @@ class HBNBCommand(cmd.Cmd):
                         if "_" in value:
                             value = value.replace("_", " ")
                     elif key in HBNBCommand.types:
-                                value = HBNBCommand.types[key](value)
+                        value = HBNBCommand.types[key](value)
             else:
                 continue
             args_to_dict[key] = value
-
-
         new_instance = HBNBCommand.classes[c_name]()
-
         storage.save()
         for k, v in args_to_dict.items():
             setattr(new_instance, k, v)
@@ -214,7 +211,7 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         try:
-            del(storage.all()[key])
+            del (storage.all()[key])
             storage.save()
         except KeyError:
             print("** no instance found **")
@@ -346,6 +343,7 @@ class HBNBCommand(cmd.Cmd):
         """ Help information for the update class """
         print("Updates an object with new information")
         print("Usage: update <className> <id> <attName> <attVal>\n")
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()

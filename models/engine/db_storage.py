@@ -20,16 +20,20 @@ class DBStorage:
                'State': State, 'City': City, 'Amenity': Amenity,
                'Review': Review
               }
+
     def __init__(self):
+
         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'
-                           .format(getenv('HBNB_MYSQL_USER'),
-                                             getenv('HBNB_MYSQL_PWD'),
-                                             getenv('HBNB_MYSQL_HOST'),
-                                             getenv('HBNB_MYSQL_DB')), pool_pre_ping=True)
+                                      .format(getenv('HBNB_MYSQL_USER'),
+                                              getenv('HBNB_MYSQL_PWD'),
+                                              getenv('HBNB_MYSQL_HOST'),
+                                              getenv('HBNB_MYSQL_DB')),
+                                      pool_pre_ping=True)
         if (getenv('HBNB_ENV') == 'test'):
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
+        """Returns a dictionary of models currently in storage"""
         dic = {}
         if cls:
             for row in self.__session.query(cls).all():
@@ -41,20 +45,22 @@ class DBStorage:
                     key = f"{v}.{row.id}"
                     dic[key] = row
         return dic
-    
+
     def new(self, obj):
+        """Adds new object to the storage"""
         self.__session.add(obj)
 
-    
     def save(self):
+        """Saves storage to database"""
         self.__session.commit()
 
-    
     def delete(self, obj=None):
+        """Deletes an object from database"""
         if obj:
             self.__session.delete(obj)
 
     def reload(self):
+        """Loads storage dictionary from database"""
         Base.metadata.create_all(self.__engine)
-
-        self.__session = scoped_session(sessionmaker(bind=self.__engine, expire_on_commit=False))
+        self.__session = scoped_session(sessionmaker(bind=self.__engine,
+                                                     expire_on_commit=False))
