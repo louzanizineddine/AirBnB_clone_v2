@@ -16,10 +16,10 @@ class DBStorage:
     __session = None
 
     classes = {
-               'BaseModel': BaseModel, 'User': User, 'Place': Place,
-               'State': State, 'City': City, 'Amenity': Amenity,
-               'Review': Review
-              }
+        'BaseModel': BaseModel, 'User': User, 'Place': Place,
+        'State': State, 'City': City, 'Amenity': Amenity,
+        'Review': Review
+    }
 
     def __init__(self):
 
@@ -44,29 +44,22 @@ class DBStorage:
             if type(cls) == str:
                 cls = eval(cls)
             objs = self.__session.query(cls)
-        return {"{}.{}".format(type(o).__name__, o.id): o for o in objs}
-        # """Returns a dictionary of models currently in storage"""
-        # dic = {}
-        # if cls:
-        #     for row in self.__session.query(cls).all():
-        #         key = f"{DBStorage.classes[cls]}.{row.id}"
-        #         dic[key] = row
-        # # else:
-        # #     for k, v in DBStorage.classes.items():
-        # #         print(self.__session.query(v))
-        # #         for row in self.__session.query(v).all():
-        # #             key = f"{v}.{row.id}"
-        # #             dic[key] = row
-        # return dic
+
+        result = []
+        for obj in objs:
+            
+            better_dic = BaseModel.to_dict(obj)
+            better_dic.pop("__class__")
+            result.append(f"[{type(obj).__name__}] ({obj.id}) {better_dic}")
+
+        return result
 
     def new(self, obj):
         """Adds new object to the storage"""
-        print("a new object is to be added")
         self.__session.add(obj)
 
     def save(self):
         """Saves storage to database"""
-        print("a new object is to be saved")
         self.__session.commit()
 
     def delete(self, obj=None):
