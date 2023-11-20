@@ -33,25 +33,40 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        """Returns a dictionary of models currently in storage"""
-        dic = {}
-        if cls:
-            for row in self.__session.query(cls).all():
-                key = f"{DBStorage.classes[cls]}.{row.id}"
-                dic[key] = row
+        if cls is None:
+            objs = self.__session.query(State).all()
+            objs.extend(self.__session.query(City).all())
+            objs.extend(self.__session.query(User).all())
+            objs.extend(self.__session.query(Place).all())
+            objs.extend(self.__session.query(Review).all())
+            objs.extend(self.__session.query(Amenity).all())
         else:
-            for k, v in DBStorage.classes.items():
-                for row in self.__session.query(v).all():
-                    key = f"{v}.{row.id}"
-                    dic[key] = row
-        return dic
+            if type(cls) == str:
+                cls = eval(cls)
+            objs = self.__session.query(cls)
+        return {"{}.{}".format(type(o).__name__, o.id): o for o in objs}
+        # """Returns a dictionary of models currently in storage"""
+        # dic = {}
+        # if cls:
+        #     for row in self.__session.query(cls).all():
+        #         key = f"{DBStorage.classes[cls]}.{row.id}"
+        #         dic[key] = row
+        # # else:
+        # #     for k, v in DBStorage.classes.items():
+        # #         print(self.__session.query(v))
+        # #         for row in self.__session.query(v).all():
+        # #             key = f"{v}.{row.id}"
+        # #             dic[key] = row
+        # return dic
 
     def new(self, obj):
         """Adds new object to the storage"""
+        print("a new object is to be added")
         self.__session.add(obj)
 
     def save(self):
         """Saves storage to database"""
+        print("a new object is to be saved")
         self.__session.commit()
 
     def delete(self, obj=None):
