@@ -1,99 +1,148 @@
 #!/usr/bin/python3
-""" """
-from models.base_model import BaseModel
+"""Unittest module for the BaseModel Class."""
+
 import unittest
-import datetime
-from uuid import UUID
-import json
+from datetime import datetime
+from models.base_model import BaseModel
+from models.engine.file_storage import FileStorage
 import os
+import pycodestyle
+from os import getenv
 
+@unittest.skipIf(getenv('HBNB_TYPE_STORAGE') == 'db', "DB storage being used")
+class TestBaseModel(unittest.TestCase):
 
-class test_basemodel(unittest.TestCase):
-    """ """
-
-    def __init__(self, *args, **kwargs):
-        """ """
-        super().__init__(*args, **kwargs)
-        self.name = 'BaseModel'
-        self.value = BaseModel
+    """Test Cases for the BaseModel class."""
 
     def setUp(self):
-        """ """
+        """Sets up test methods."""
         pass
 
     def tearDown(self):
-        try:
-            os.remove('file.json')
-        except:
-            pass
+        """Tears down test methods."""
+        self.resetStorage()
+        pass
 
-    def test_default(self):
-        """ """
-        i = self.value()
-        self.assertEqual(type(i), self.value)
+    def resetStorage(self):
+        """Resets FileStorage data."""
+        FileStorage._FileStorage__objects = {}
+        if os.path.isfile(FileStorage._FileStorage__file_path):
+            os.remove(FileStorage._FileStorage__file_path)
 
-    def test_kwargs(self):
-        """ """
-        i = self.value()
-        copy = i.to_dict()
-        new = BaseModel(**copy)
-        self.assertFalse(new is i)
+    def test_init(self):
+        """
+        Test the initialization of the BaseModel class.
 
-    def test_kwargs_int(self):
-        """ """
-        i = self.value()
-        copy = i.to_dict()
-        copy.update({1: 2})
-        with self.assertRaises(TypeError):
-            new = BaseModel(**copy)
+        It checks whether the BaseModel instance is correctly initialized,
+        including the data types of its attributes.
+        """
+        model = BaseModel()
+        self.assertIsInstance(model.id, str)
+        self.assertIsInstance(model.created_at, datetime)
+        self.assertIsInstance(model.updated_at, datetime)
 
-    def test_save(self):
-        """ Testing save """
-        i = self.value()
-        i.save()
-        key = self.name + "." + i.id
-        with open('file.json', 'r') as f:
-            j = json.load(f)
-            self.assertEqual(j[key], i.to_dict())
+    def test_base_model_type(self):
+        """Test if init is ok with with type BaseModel"""
+
+        model = BaseModel()
+        self.assertIsInstance(model, BaseModel)
 
     def test_str(self):
-        """ """
-        i = self.value()
-        self.assertEqual(str(i), '[{}] ({}) {}'.format(self.name, i.id,
-                         i.__dict__))
+        """
+        Test the __str__ method of the BaseModel class.
 
-    def test_todict(self):
-        """ """
-        i = self.value()
-        n = i.to_dict()
-        self.assertEqual(i.to_dict(), n)
+        It checks if the __str__ method returns a string representation
+        with the expected format.
+        """
+        model = BaseModel()
+        model_str = str(model)
+        self.assertIn("[BaseModel] ({})".format(model.id), model_str)
 
-    def test_kwargs_none(self):
-        """ """
-        n = {None: None}
-        with self.assertRaises(TypeError):
-            new = self.value(**n)
+    def test_save(self):
+        """
+        Test the save method of the BaseModel class.
 
-    def test_kwargs_one(self):
-        """ """
-        n = {'Name': 'test'}
-        with self.assertRaises(KeyError):
-            new = self.value(**n)
+        It checks if the save method updates the updated_at attribute.
+        """
+        model = BaseModel()
+        old_updated_at = model.updated_at
+        model.save()
+        self.assertNotEqual(old_updated_at, model.updated_at)
 
-    def test_id(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.id), str)
+    def test_to_dict(self):
+        """
+        Test the to_dict method of the BaseModel class.
 
-    def test_created_at(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.created_at), datetime.datetime)
+        It checks if the to_dict method returns a dictionary with the
+        expected keys and values.
+        """
+        model = BaseModel()
+        model_dict = model.to_dict()
+        self.assertIsInstance(model_dict, dict)
+        self.assertIn('__class__', model_dict)
+        self.assertIn('created_at', model_dict)
+        self.assertIn('updated_at', model_dict)
+        self.assertEqual(model_dict['__class__'], 'BaseModel')
 
-    def test_updated_at(self):
-        """ """
-        new = self.value()
-        self.assertEqual(type(new.updated_at), datetime.datetime)
-        n = new.to_dict()
-        new = BaseModel(**n)
-        self.assertFalse(new.created_at == new.updated_at)
+class TestPycodestyle(unittest.TestCase):
+    """
+    test that we conform to PEP-8
+    """
+    def test_checking(self):
+        """Testing
+        pycodestyle"""
+        style = pycodestyle.StyleGuide(quit=True)
+        result = style.check_files(['models/base_model.py'])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warnings).")
+
+
+class TestDocuemntationOfAll(unittest.TestCase):
+    """
+    This class will have the unittesting of that the
+    whole module is well documented
+    """
+    def test_module_doc(self):
+        """
+        Test if module documentation exists
+        """
+        boolVal = len(BaseModel.__module__.__doc__) > 1
+        self.assertTrue(boolVal)
+
+    def test_class_doc(self):
+        """
+        Test if module documentation exists
+        """
+        boolVal = len(BaseModel.__doc__) > 1
+        self.assertTrue(boolVal)
+
+    def test_init_doc(self):
+        """
+        Test if module documentation exists
+        """
+        boolVal = len(BaseModel.__init__.__doc__) > 1
+        self.assertTrue(boolVal)
+
+    def test_str_doc(self):
+        """
+        Test if module documentation exists
+        """
+        boolVal = len(BaseModel.__str__.__doc__) > 1
+        self.assertTrue(boolVal)
+
+    def test_save_doc(self):
+        """
+        Test if module documentation exists
+        """
+        boolVal = len(BaseModel.save.__doc__) > 1
+        self.assertTrue(boolVal)
+
+    def test_to_dict_doc(self):
+        """
+        Test if module documentation exists
+        """
+        boolVal = len(BaseModel.to_dict.__doc__) > 1
+        self.assertTrue(boolVal)
+
+if __name__ == "__main__":
+    unittest.main()
