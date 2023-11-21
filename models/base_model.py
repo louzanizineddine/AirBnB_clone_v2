@@ -22,7 +22,7 @@ class BaseModel:
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
         else:
-            del kwargs['__class__']
+            kwargs.pop('__class__', None)
             if 'id' not in kwargs:
                 self.id = str(uuid.uuid4())
             if 'created_at' or 'updated_at' not in kwargs:

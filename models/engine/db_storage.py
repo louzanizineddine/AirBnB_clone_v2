@@ -41,13 +41,13 @@ class DBStorage:
             objs.extend(self.__session.query(Review).all())
             objs.extend(self.__session.query(Amenity).all())
         else:
-            if type(cls) == str:
+            if type(cls) is str:
                 cls = eval(cls)
             objs = self.__session.query(cls)
 
         result = []
         for obj in objs:
-            
+
             better_dic = BaseModel.to_dict(obj)
             better_dic.pop("__class__")
             result.append(f"[{type(obj).__name__}] ({obj.id}) {better_dic}")
