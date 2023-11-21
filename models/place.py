@@ -13,7 +13,6 @@ place_amenity = Table(
                primary_key=True, nullable=False))
 
 
-
 class Place(BaseModel, Base):
     """ A place to stay """
     __tablename__ = "places"
@@ -32,5 +31,3 @@ class Place(BaseModel, Base):
     amenities = relationship('Amenity',
                              secondary='place_amenity', viewonly=False,
                              overlaps="place_amenities")
-
-    
