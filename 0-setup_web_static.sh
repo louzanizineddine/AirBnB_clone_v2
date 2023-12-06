@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#script exlaining what's going on 
+# script exlaining what's going on 
 apt-get update
 
 apt-get install -y nginx
@@ -27,4 +27,3 @@ chown -R ubuntu:ubuntu /data/
 sed -i '57i\\tlocation /hbnb_static {\n\t\talias /data/web_static/current/;\n\t}' /etc/nginx/sites-enabled/default
 
 service nginx restart
-
