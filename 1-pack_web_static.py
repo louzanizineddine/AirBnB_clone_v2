@@ -1,17 +1,12 @@
 #!/usr/bin/python3
-"""
-genereate archive from web_static folder to deploy static web
-"""
-from fabric.api import local
+from fabric.api import local, task
 from datetime import datetime
 import os.path
 
 
 @task
 def do_pack():
-    """
-    genereate archive from web_static folder to deploy static web
-    """
+    """genereate archive from web_static folder to deploy static web"""
 
     date = datetime.now().strftime("%Y%m%d%H%M%S")
     path = 'versions/web_static_' + date + '.tgz'
