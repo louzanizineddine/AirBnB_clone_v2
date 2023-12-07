@@ -6,6 +6,7 @@ import os
 env.hosts = ["100.25.22.28", "100.26.226.197"]
 env.user = 'ubuntu'
 
+
 @task
 def do_deploy(archive_path):
     """deploy static archive to the servers web to servers"""
