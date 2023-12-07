@@ -6,6 +6,7 @@ import os
 env.hosts = ["100.25.22.28", "100.26.226.197"]
 env.user = 'ubuntu'
 
+
 @task
 def do_pack():
     """genereate archive from web_static folder to deploy static web"""
@@ -18,6 +19,7 @@ def do_pack():
     if (os.path.exists(path)):
         return path
     return None
+
 
 @task
 def do_deploy(archive_path):
@@ -42,6 +44,7 @@ def do_deploy(archive_path):
         return True
     except Exception:
         return False
+
 
 @task
 def deploy():
