@@ -1,8 +1,10 @@
 #!/usr/bin/python3
-from fabric.api import local, task, run, put
+from fabric.api import local, task, run, put, env
 from datetime import datetime
-import os.path
+import os
 
+env.hosts = ["100.25.22.28", "100.26.226.197"]
+env.user = 'ubuntu'
 
 @task
 def do_deploy(archive_path):
