@@ -77,3 +77,7 @@ class FileStorage:
                 except (KeyError, AttributeError):
                     pass
                 break
+    
+    def close(self):
+        """calling method for deserializing the JSON file to objects"""
+        self.reload()
